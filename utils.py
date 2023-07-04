@@ -6,7 +6,6 @@ import torchvision
 from torch.utils.data import Dataset
 
 
-
 def get_mean_and_std(exp_data):
     '''Calculate the mean and std for normalization'''
     print(' - Dataset Numpy Shape:', exp_data.shape)
