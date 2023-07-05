@@ -1,5 +1,6 @@
 import torchvision
 import numpy as np
+import torch
 
 class Cifar10Dataset(torchvision.datasets.CIFAR10):
     def __init__(self, root="~/data/cifar10", train=True, download=True, transform=None):
