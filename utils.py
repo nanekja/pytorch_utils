@@ -45,36 +45,25 @@ def imshow(img):
     npimg = img.numpy()
     plt.imshow(np.transpose(npimg, (1, 2, 0)))
 
+
+def result_graphs(history):
+    fig, axs = plt.subplots(1,2,figsize=(16,7))
+    axs[0].set_title('LOSS')
+    axs[0].plot(history[1], label='Train')
+    axs[0].plot(history[3], label='Test')
+    axs[0].legend()
+    axs[0].grid()
+
+    axs[1].set_title('Accuracy')
+    axs[1].plot(history[0], label='Train')
+    axs[1].plot(history[2], label='Test')
+    axs[1].legend()
+    axs[1].grid()
+
+    plt.show()    
+
+
    
-def draw_graphs(train_losses, train_acc, test_losses, test_acc):
-    t = [t_items.item() for t_items in train_losses]
-    fig, axs = plt.subplots(2,2,figsize=(15,10))
-    axs[0, 0].plot(t)
-    axs[0, 0].set_title("Training Loss")
-    axs[1, 0].plot(train_acc)
-    axs[1, 0].set_title("Training Accuracy")
-    axs[0, 1].plot(test_losses)
-    axs[0, 1].set_title("Test Loss")
-    axs[1, 1].plot(test_acc)
-    axs[1, 1].set_title("Test Accuracy")
-
-def convert_image_np(inp, mean, std):
-    """Convert normalized tensor to numpy image for display.
-
-    Args:
-        inp (tensor): Tensor image
-        mean(np array): numpy array of mean of dataset
-        std(np array): numpy array of standard deviation of dataset
-
-    Returns:
-        np array: a numpy image
-    """
-
-    inp = inp.numpy().transpose((1, 2, 0))
-    inp = std * inp + mean
-    inp = np.clip(inp, 0, 1)
-    return inp
-
 def plot_misclassified(model, test_loader, classes, device, dataset_mean, dataset_std, no_misclf=20, plot_size=(4,5), return_misclf=False):
     """Plot the images are wrongly clossified by model
 
@@ -130,3 +119,22 @@ def plot_misclassified(model, test_loader, classes, device, dataset_mean, datase
     
     if return_misclf:
         return misclf
+
+def convert_image_np(inp, mean, std):
+    """Convert normalized tensor to numpy image for display.
+
+    Args:
+        inp (tensor): Tensor image
+        mean(np array): numpy array of mean of dataset
+        std(np array): numpy array of standard deviation of dataset
+
+    Returns:
+        np array: a numpy image
+    """
+
+    inp = inp.numpy().transpose((1, 2, 0))
+    inp = std * inp + mean
+    inp = np.clip(inp, 0, 1)
+    return inp
+
+
