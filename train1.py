@@ -4,7 +4,7 @@ from tqdm import tqdm
 import torch.nn.functional as F
 
 train_losses = []
-#train_acc = []
+train_acc = []
 
 
 def train(model, device, train_loader, optimizer, epoch):
