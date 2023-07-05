@@ -3,8 +3,8 @@ import torch
 from tqdm import tqdm
 import torch.nn.functional as F
 
-test_losses = []
-test_acc = []
+#test_losses = []
+#test_acc = []
 
 def test(model, device, test_loader):
     model.eval()
