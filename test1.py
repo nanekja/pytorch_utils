@@ -7,6 +7,14 @@ import torch.nn.functional as F
 #test_acc = []
 
 def test(model, device, test_loader):
+    """Model Testing Loop
+    Args:
+        model : torch model 
+        device : "cpu" or "cuda" gpu 
+        test_loader : Torch Dataloader for testset
+    Returns:
+        float: accuracy and loss values
+    """
     model.eval()
     test_loss = 0
     correct = 0
@@ -19,10 +27,10 @@ def test(model, device, test_loader):
             correct += pred.eq(target.view_as(pred)).sum().item()
 
     test_loss /= len(test_loader.dataset)
-    test_losses.append(test_loss)
 
     print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.2f}%)\n'.format(
         test_loss, correct, len(test_loader.dataset),
         100. * correct / len(test_loader.dataset)))
-
-    test_acc.append(100. * correct / len(test_loader.dataset))
+    
+    
+    return 100. * correct / len(test_loader.dataset), test_loss
