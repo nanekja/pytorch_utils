@@ -162,6 +162,8 @@ def find_lr(net, optimizer, criterion, train_loader):
     lr_finder.range_test(transform.train_loader, end_lr=10, num_iter=100, step_mode="exp")
     lr_finder.plot()
     lr_finder.reset()
-    min_loss = min(lr_finder.history['loss'])
-    ler_rate = lr_finder.history['lr'][np.argmin(lr_finder.history['loss'], axis=0)]
-    print("Max LR is {}".format(ler_rate))
+
+def ler_rate():
+    min_loss = min(find_lr(lr_finder).history['loss'])
+    ler_rate = find_lr(lr_finder).history['lr'][np.argmin(find_lr(lr_finder).history['loss'], axis=0)]
+    return ler_rate
