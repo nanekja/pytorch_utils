@@ -14,7 +14,11 @@ def get_device():
     use_cuda = torch.cuda.is_available()
     return torch.device("cuda" if use_cuda else "cpu")
 
-def get_mean_and_std(exp_data):
+def get_mean_and_std():
+
+    exp = torchvision.datasets.CIFAR10('./data', train=True, download=True)
+    exp_data = exp.data
+
     '''Calculate the mean and std for normalization'''
     print(' - Dataset Numpy Shape:', exp_data.shape)
     print(' - Min:', np.min(exp_data, axis=(0,1,2)) / 255.)
