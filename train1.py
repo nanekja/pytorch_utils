@@ -7,7 +7,7 @@ import torch.nn.functional as F
 #train_acc = []
 
 
-def train(model, device, train_loader, optimizer,scheduler):
+def train(model, device, train_loader, optimizer, criterion, scheduler):
     """Model Training Loop
     Args:
         model : torch model 
@@ -37,7 +37,7 @@ def train(model, device, train_loader, optimizer,scheduler):
         # Predict
         y_pred = model(data)
         # Calculate loss
-        loss = F.nll_loss(y_pred, target)
+        loss = criterion(y_pred, target)
 
         # Backpropagation
         loss.backward()
