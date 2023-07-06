@@ -6,6 +6,14 @@ import torchvision
 from torch.utils.data import Dataset
 
 
+def get_device():
+    '''
+    This method returns the device in use.
+    If cuda(gpu) is available it would return that, otherwise it would return cpu.
+    '''
+    use_cuda = torch.cuda.is_available()
+    return torch.device("cuda" if use_cuda else "cpu")
+
 def get_mean_and_std(exp_data):
     '''Calculate the mean and std for normalization'''
     print(' - Dataset Numpy Shape:', exp_data.shape)
