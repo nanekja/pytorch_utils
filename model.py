@@ -11,89 +11,70 @@ class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
         
-        ## Convolution Block1
-        self.conv1 = nn.Sequential(
-            nn.Conv2d(3, 32, 3, padding=1, bias = False),  # Input: 32x32x3 | Output: 32x32x32 | RF: 3x3
-            nn.ReLU(),
-            nn.BatchNorm2d(32),
-            nn.Dropout2d(dropout),
-
-            nn.Conv2d(32, 64, 3, padding=1, bias = False), # Input: 32x32x32 | Output: 32x32x64 | RF: 5x5
-            nn.ReLU(),
+        ## Prep Layer
+        self.prep_layer = nn.Sequential(
+            nn.Conv2d(3, 64, 3, stride=1, padding=1, bias=False),
             nn.BatchNorm2d(64),
-            nn.Dropout2d(dropout),
-
-            nn.Conv2d(64, 64, 3, padding=1, stride=2), # Input: 32x32x64 | Output: 16x16x64 | RF: 5x5
             nn.ReLU(),
-            nn.BatchNorm2d(64),
-            nn.Dropout2d(dropout),
         )
 
-        ## Convolution Block2
-        self.conv2 =  nn.Sequential(
-            nn.Conv2d(64, 64, 3,  padding=1, bias = False), # Input: 16x16x64 | Output: 16x16x32 | RF: 9x9
-            nn.ReLU(),
-            nn.BatchNorm2d(64),
-            nn.Dropout2d(dropout),
-
-            ## Depthwise Seperable Convolution1
-            nn.Conv2d(64, 64, 3,  padding=1,groups=64 ,bias = False),  # Input: 16x16x32 | Output: 16x16x32 | RF: 13x13
-            nn.Conv2d(64, 128, 1, padding=1, bias = False),   # Input: 16x16x32 | Output: 18x18x64 | RF: 13x13
-            nn.ReLU(),
+        self.layer1 = nn.Sequential(
+            nn.Conv2d(64, 128, 3, stride=1, padding=1, bias=False),
+            nn.MaxPool2d(2, 2),
             nn.BatchNorm2d(128),
-            nn.Dropout2d(dropout),
-
-            nn.Conv2d(128, 32, 1, stride=2), # Input: 18x18x32 | Output: 9x9x64 | RF: 13x13
             nn.ReLU()
         )
 
-        #Convolution Block3
-        self.conv3 = nn.Sequential(
-            
-            ## Dilation Block
-            nn.Conv2d(32, 64, 3,  padding=1, bias = False,dilation=2), # Input: 9x9x64 | Output: 7x7x64 | RF: 29x29
-            nn.ReLU(),
-            nn.BatchNorm2d(64),
-            nn.Dropout2d(dropout),
+        self.resblock1 = self.resblock(128, 128, 3)
 
-            nn.Conv2d(64, 64, 3,  padding=1, bias = False),  # Input: 7x7x64| Output: 7x7x64 | RF: 45x45
-            nn.ReLU(),
-            nn.BatchNorm2d(64),
-            nn.Dropout2d(dropout),
-
-            nn.Conv2d(64, 32, 1, stride=2), # Input: 7x7x64| Output: 4x4x32 | RF: 61x61
+        self.layer2 = nn.Sequential(
+            nn.Conv2d(128, 256, 3, stride=1, padding=1, bias=False),
+            nn.MaxPool2d(2, 2),
+            nn.BatchNorm2d(256),
             nn.ReLU()
         )
 
-        #Convolution Block4        
-        self.conv4 = nn.Sequential(
-            nn.Conv2d(32, 64, 3, padding=1, bias = False), # Input: 4x4x32 | Output: 4x4x64 | RF: 93x93
-            nn.ReLU(),
-            nn.BatchNorm2d(64),
-            nn.Dropout2d(dropout),
-
-            ## Depthwise seperable Convolution2
-            nn.Conv2d(64,64, 3,  padding=1,groups=64 ,bias = False),# Input: 4x4x64 | Output: 4x4x64 | RF: 125x125
-
-            nn.Conv2d(64, 10, 1, padding=1, bias = False),          # Input: 4x4x64| Output: 6x6x10 | RF: 125x125
-            nn.ReLU(),
-            #nn.BatchNorm2d(10),
-            #nn.Dropout2d(dropout),
+        self.layer3 = nn.Sequential(
+            nn.Conv2d(256, 512, 3, stride=1, padding=1, bias=False),
+            nn.MaxPool2d(2, 2),
+            nn.BatchNorm2d(512),
+            nn.ReLU()
         )
 
-        ## Output Block
-        self.gap = nn.Sequential(nn.AdaptiveAvgPool2d(1)
+        self.resblock2 = self.resblock(512, 512, 3)
+
+        self.pool = nn.MaxPool2d(4,4)
+        self.FC = nn.Linear(512, 10, bias = False)
+
+
+    def resblock(self, in_channels, out_channels, kernel_size):
+        conv = nn.Sequential(
+            nn.Conv2d(in_channels=in_channels, out_channels=out_channels, kernel_size=kernel_size, padding=1, bias=False),
+            nn.BatchNorm2d(out_channels),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=out_channels, out_channels=out_channels, kernel_size=kernel_size, padding=1, bias=False),
+            nn.BatchNorm2d(out_channels),
+            nn.ReLU()
+        )
+        return conv
+
         
-        ) 
-
-
     def forward(self, x):
-        x = self.conv1(x)
-        x = self.conv2(x) 
-        x = self.conv3(x) 
-        x = self.conv4(x)
-
-        x = self.gap(x)
-
-        x = x.view(-1,10)
-        return F.log_softmax(x,dim=1)
+        x = self.prep_layer(x) ## Input size = 32x32, output size = 32x32
+        
+        x = self.layer1(x) ## Input size = 32x32, output size = 16x16
+        res_1 = self.resblock1(x) ## Input size = 16x16, output size = 16x16
+        x = x + res_1
+        
+        x = self.layer2(x) ## Input size = 16x16, output size = 8x8
+        
+        x = self.layer3(x) ## Input size = 8x8, output size = 4x4
+        res_2 = self.resblock2(x) ## Input size = 4x4, output size = 4x4
+        x = x + res_2 
+        
+        x = self.pool(x) ## Input size = 4x4, output size = 1x1
+        x = x.view(x.size(0), -1)
+        x = self.FC(x)
+        
+        x = x.view(-1, 10)
+        return F.softmax(x, dim=-1)
