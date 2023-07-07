@@ -159,7 +159,7 @@ def find_lr(net, optimizer, criterion, train_loader):
         train_loader (instance): torch dataloader instace for trainig set
     """
     lr_finder = LRFinder(net, optimizer, criterion, device=get_device())
-    lr_finder.range_test(transform.train_loader, end_lr=10, num_iter=100, step_mode="exp")
+    lr_finder.range_test(transform.train_loader, end_lr=100, num_iter=400, step_mode="exp")
     lr_finder.plot()
     lr_finder.reset()
 
