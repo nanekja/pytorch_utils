@@ -45,7 +45,7 @@ class Net(nn.Module):
 
         self.pool = nn.MaxPool2d(4,4)
         
-        self.fc1 = nn.Linear(in_features=512,out_features=10, bias = False)
+        self.fc = nn.Linear(in_features=512,out_features=10, bias = False)
 
 
     def resblock(self, in_channels, out_channels, kernel_size):
