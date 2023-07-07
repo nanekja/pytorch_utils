@@ -26,7 +26,7 @@ def fit_model(net, device, train_loader, test_loader, optimizer, criterion, sche
     for epoch in range(1,NUM_EPOCHS+1):
         print("EPOCH: {} (LR: {})".format(epoch, optimizer.param_groups[0]['lr']))
         train_acc, train_loss, lr_hist = train1.train(net, device, train_loader, optimizer, criterion, scheduler)
-        test_acc, test_loss = test1.test(net, device, test_loader)
+        test_acc, test_loss = test1.test(net, device, test_loader, criterion)
 
         training_acc.append(train_acc)
         training_loss.append(train_loss)

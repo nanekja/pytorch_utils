@@ -6,7 +6,7 @@ import torch.nn.functional as F
 #test_losses = []
 #test_acc = []
 
-def test(model, device, test_loader):
+def test(model, device, test_loader, criterion):
     """Model Testing Loop
     Args:
         model : torch model 
