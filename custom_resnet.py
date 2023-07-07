@@ -45,9 +45,7 @@ class Net(nn.Module):
 
         self.pool = nn.MaxPool2d(4,4)
         
-        self.fc1 = nn.Linear(in_features=512,out_features=256, bias = False)
-        self.fc2 = nn.Linear(in_features=256,out_features=64, bias = False)
-        self.fc3 = nn.Linear(in_features=64,out_features=10, bias = False)
+        self.fc1 = nn.Linear(in_features=512,out_features=10, bias = False)
 
 
     def resblock(self, in_channels, out_channels, kernel_size):
@@ -78,9 +76,7 @@ class Net(nn.Module):
         x = self.pool(x) ## Input size = 4x4, output size = 1x1
         x = x.view(x.size(0), -1)
         
-        x = self.fc1(x)
-        x = self.fc2(x)
-        x = self.fc3(x)
+        x = self.fc(x)
         
         x = x.view(-1, 10)
         return F.softmax(x, dim=-1)
