@@ -53,10 +53,17 @@ def plot_data(data, rows, cols):
     plt.show()
 
 
-def imshow(img):
-    img = img / 2 + 0.5     # unnormalize
+#def imshow(img):
+#    img = img / 2 + 0.5     # unnormalize
+#    npimg = img.numpy()
+#    plt.imshow(np.transpose(npimg, (1, 2, 0)))
+
+def imshow(img,c = "" ):
+    #img = img / 2 + 0.5     # unnormalize
     npimg = img.numpy()
-    plt.imshow(np.transpose(npimg, (1, 2, 0)))
+    fig = plt.figure(figsize=(10,10))
+    plt.imshow(np.transpose(npimg, (1, 2, 0)),interpolation='none')
+    plt.title(c)
 
 
 def result_graphs(history):
@@ -75,7 +82,16 @@ def result_graphs(history):
 
     plt.show()    
 
-
+def plot_train_vs_test_accuracy(epochs, train_acc, test_acc):
+  train_range = range(1,epochs+1)
+  plt.plot(train_range, train_acc, 'g', label='Training accuracy')
+  plt.plot(train_range, test_acc, 'b', label='validation accuracy')
+  plt.title('Training and Validation accuracy')
+  plt.xlabel('Epochs')
+  plt.ylabel('Accuracy')
+  plt.legend()
+  plt.show()
+  
    
 def plot_misclassified(model, test_loader, classes, device, dataset_mean, dataset_std, no_misclf=20, plot_size=(4,5), return_misclf=False):
     """Plot the images are wrongly clossified by model
