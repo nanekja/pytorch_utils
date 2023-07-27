@@ -82,16 +82,6 @@ def result_graphs(history):
 
     plt.show()    
 
-def plot_train_vs_test_accuracy(epochs, train_acc, test_acc):
-  train_range = range(1,epochs+1)
-  plt.plot(train_range, train_acc, 'g', label='Training accuracy')
-  plt.plot(train_range, test_acc, 'b', label='validation accuracy')
-  plt.title('Training and Validation accuracy')
-  plt.xlabel('Epochs')
-  plt.ylabel('Accuracy')
-  plt.legend()
-  plt.show()
-  
    
 def plot_misclassified(model, test_loader, classes, device, dataset_mean, dataset_std, no_misclf=20, plot_size=(4,5), return_misclf=False):
     """Plot the images are wrongly clossified by model
