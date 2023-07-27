@@ -7,7 +7,7 @@ SEED = 69
 
 torch.manual_seed(SEED)
 
-batch_size=512
+batch_size=32
 
 trainset = dataloader.Cifar10Dataset(root='./data', train=True, download=True, transform=albumentation.train_transforms())
 testset = dataloader.Cifar10Dataset(root='./data', train=False, download=True, transform=albumentation.test_transforms())
