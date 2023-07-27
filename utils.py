@@ -82,6 +82,19 @@ def result_graphs(history):
 
     plt.show()    
 
+def get_misclassified_images(model, device, dataset, classes, total_images):
+  misclassified_images = []
+  
+  for images, labels in dataset:
+            images, labels = images.to(device), labels.to(device)
+            outputs = model(images)
+            _, predicted = torch.max(outputs.data, 1)
+            for i in range(len(labels)):
+              if(len(misclassified_images)<total_images and predicted[i]!=labels[i]):
+                misclassified_images.append([images[i],predicted[i],labels[i]])
+            if(len(misclassified_images)>total_images):
+              break
+  return misclassified_images
    
 def plot_misclassified(model, test_loader, classes, device, dataset_mean, dataset_std, no_misclf=20, plot_size=(4,5), return_misclf=False):
     """Plot the images are wrongly clossified by model
@@ -174,3 +187,5 @@ def ler_rate(net, optimizer, criterion, train_loader):
     min_loss = min(lr_finder.history['loss'])
     ler_rate = lr_finder.history['lr'][np.argmin(lr_finder.history['loss'], axis=0)]
     return ler_rate
+
+
