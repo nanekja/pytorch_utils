@@ -24,6 +24,7 @@ def train(model, device, train_loader, optimizer, criterion, scheduler):
     processed = 0
     num_loops = 0
     train_loss = 0
+    metric=0
     for batch_idx, (data, target) in enumerate(pbar):
             # get samples
         data, target = data.to(device), target.to(device)
@@ -43,7 +44,7 @@ def train(model, device, train_loader, optimizer, criterion, scheduler):
         loss.backward()
         optimizer.step()
 
-        scheduler.step()
+        scheduler.step(metric)
         lr_trend.append(scheduler.get_last_lr()[0])
 
         train_loss += loss.item()
