@@ -181,6 +181,10 @@ def find_lr(net, optimizer, criterion, train_loader):
     lr_finder.range_test(transform.train_loader, end_lr=1, num_iter=500, step_mode="exp")
     lr_finder.plot()
     lr_finder.reset()
+    selected_lr = lr_finder.history['lr'][lr_finder.history['loss'].index(lr_finder.best_loss)]
+    print(f'Selected learning rate : {selected_lr}')
+
+    return selected_lr
 
 def ler_rate(net, optimizer, criterion, train_loader):
     lr_finder = LRFinder(net, optimizer, criterion, device=get_device())
