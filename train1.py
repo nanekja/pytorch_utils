@@ -44,8 +44,8 @@ def train(model, device, train_loader, optimizer, criterion, scheduler):
         loss.backward()
         optimizer.step()
 
-        scheduler.step(metric)
-        lr_trend.append(scheduler.get_last_lr()[0])
+        #scheduler.step()
+        #lr_trend.append(scheduler.get_last_lr()[0])
 
         train_loss += loss.item()
         
