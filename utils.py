@@ -185,8 +185,8 @@ def find_lr(net, optimizer, criterion, train_loader):
 def ler_rate(net, optimizer, criterion, train_loader):
     lr_finder = LRFinder(net, optimizer, criterion, device=get_device())
     #min_loss = min(lr_finder.history['loss'])
-    #ler_rate = lr_finder.history['lr'][np.argmin(lr_finder.history['loss'], axis=0]
-    ler_rate = lr_finder.history['lr'][lr_finder.history['loss'].index(lr_finder.best_loss)]
-    return ler_rate
+    lr1 = lr_finder.history['lr'][np.argmin(lr_finder.history['loss'], axis=0)]
+    #ler_rate = lr_finder.history['lr'][lr_finder.history['loss'].index(lr_finder.best_loss)]
+    return lr1
 
 
