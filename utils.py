@@ -96,7 +96,7 @@ def get_misclassified_images(model, device, dataset, classes, total_images):
               break
   return misclassified_images
    
-def plot_misclassified(model, test_loader, classes, device, dataset_mean, dataset_std, no_misclf=20, plot_size=(4,5), return_misclf=False):
+def plot_misclassified(model, test_loader, classes, device, dataset_mean, dataset_std, no_misclf=10, plot_size=(4,5), return_misclf=False):
     """Plot the images are wrongly clossified by model
 
     Args:
@@ -178,7 +178,7 @@ def find_lr(net, optimizer, criterion, train_loader):
         train_loader (instance): torch dataloader instace for trainig set
     """
     lr_finder = LRFinder(net, optimizer, criterion, device=get_device())
-    lr_finder.range_test(transform.train_loader, end_lr=10, num_iter=400, step_mode="exp")
+    lr_finder.range_test(transform.train_loader, end_lr=1, num_iter=500, step_mode="exp")
     lr_finder.plot()
     lr_finder.reset()
 
