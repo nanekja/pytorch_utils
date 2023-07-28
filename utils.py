@@ -96,7 +96,7 @@ def get_misclassified_images(model, device, dataset, classes, total_images):
               break
   return misclassified_images
    
-def plot_misclassified(model, test_loader, classes, device, dataset_mean, dataset_std, no_misclf=10, plot_size=(4,5), return_misclf=False):
+def plot_misclassified(model, test_loader, classes, device, dataset_mean, dataset_std, no_misclf=10, plot_size=(2,5), return_misclf=False):
     """Plot the images are wrongly clossified by model
 
     Args:

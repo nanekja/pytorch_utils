@@ -44,6 +44,7 @@ def train(model, device, train_loader, optimizer, criterion, scheduler):
         loss.backward()
         optimizer.step()
 
+        # The following steps are removed after changing the scheduler to ReduceLROnPlateau
         #scheduler.step()
         #lr_trend.append(scheduler.get_last_lr()[0])
 
