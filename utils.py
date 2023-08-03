@@ -11,6 +11,7 @@ import cv2
 import torch.nn.functional as F
 import math
 from pytorch_grad_cam.utils.image import show_cam_on_image
+from pytorch_grad_cam import GradCAM
 
 class GradCAM:
     """Calculate GradCAM salinecy map.
