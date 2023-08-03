@@ -345,8 +345,8 @@ def get_misclassified_data(model, device, test_loader):
 def display_gradcam_output(data: list,
                            classes: list[str],
                            inv_normalize: transforms.Normalize,
-                           model: 'DL Model',
-                           target_layers: list['model.layer'],
+                           model: 'DL Model', target_layers,
+                           #target_layers: list['model.layer'],
                            targets=None,
                            number_of_samples: int = 10,
                            transparency: float = 0.60):
