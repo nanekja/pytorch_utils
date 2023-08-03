@@ -8,11 +8,30 @@ from torch.utils.data import Dataset
 from torch_lr_finder import LRFinder
 import transform
 import cv2
+import sys
 import torch.nn.functional as F
 import math
 from pytorch_grad_cam.utils.image import show_cam_on_image
 from pytorch_grad_cam import GradCAM
 
+def preprocess_image(img):
+
+    mean = [0.485, 0.456, 0.406] 
+    stds = [0.229, 0.224, 0.225]
+    preprocessed_img = img.copy()[:, :, ::-1] # BGR > RGB
+    
+    for i in range(3):
+
+        preprocessed_img[:, :, i] = preprocessed_img[:, :, i] - mean[i]
+        preprocessed_img[:, :, i] = preprocessed_img[:, :, i] / stds[i]
+        
+    preprocessed_img = \
+        np.ascontiguousarray(np.transpose(preprocessed_img, (2, 0, 1))) #transpose HWC > CHW
+    preprocessed_img = t.from_numpy(preprocessed_img) #totensor
+    preprocessed_img.unsqueeze_(0)
+    input = t.tensor(preprocessed_img, requires_grad=True)
+    
+    return input
 
 """VISUALIZE_GRADCAM"""
 
@@ -181,61 +200,6 @@ def plot_misclassified(model, test_loader, classes, device, dataset_mean, datase
     if return_misclf:
         return misclf
 
-def plot_misclassified2(model, test_loader, classes, device, dataset_mean, dataset_std, no_misclf, plot_size, return_misclf=False):
-    """Plot the images are wrongly clossified by model
-
-    Args:
-        model (instance): torch instance of defined model (pre trained)
-        test_loader (instace): torch data loader of testing set
-        classes (dict or list): classes in the dataset
-                if dict:
-                    key - class id
-                    value - as class name
-                elif list:
-                    index of list correspond to class id and name
-        device (str): 'cpu' or 'cuda' device to be used
-        dataset_mean (tensor or np array): mean of dataset
-        dataset_std (tensor or np array): std of dataset
-        no_misclf (int, optional): number of misclassified images to plot. Defaults to 20.
-        plot_size (tuple): tuple containing size of plot as rows, columns. Defaults to (4,5)
-        return_misclf (bool, optional): True to return the misclassified images. Defaults to False.
-
-    Returns:
-        list: list containing misclassified images as np array if return_misclf True
-    """
-    count = 0
-    k = 0
-    misclf = list()
-  
-    while count<no_misclf:
-        img_model, label = test_loader.dataset[k]
-        pred = model(img_model.unsqueeze(0).to(device)) # Prediction
-        # pred = model(img.unsqueeze(0).to(device)) # Prediction
-        pred = pred.argmax().item()
-
-        k += 1
-        if pred!=label:
-            img = convert_image_np(
-                img_model, dataset_mean, dataset_std)
-            misclf.append((img_model, img, label, pred))
-            count += 1
-    
-    rows, cols = plot_size
-    figure = plt.figure(figsize=(cols*3,rows*3))
-
-    for i in range(1, cols * rows + 1):
-        _, img, label, pred = misclf[i-1]
-
-        figure.add_subplot(rows, cols, i) # adding sub plot
-        plt.title(f"Pred label: {classes[pred]}\n True label: {classes[label]}") # title of plot
-        plt.axis("off") # hiding the axis
-        plt.imshow(img, cmap="gray") # showing the plot
-
-    plt.tight_layout()
-    plt.show()
-    
-    if return_misclf:
-        return misclf
 
 def convert_image_np(inp, mean, std):
     """Convert normalized tensor to numpy image for display.
@@ -278,7 +242,16 @@ def ler_rate(net, optimizer, criterion, train_loader):
     #ler_rate = lr_finder.history['lr'][lr_finder.history['loss'].index(lr_finder.best_loss)]
     return lr1
 
-
+def show_cam_on_image(img, mask):
+    heatmap = cv2.applyColorMap(np.uint8(255*mask), cv2.COLORMAP_JET)
+    heatmap = np.float32(heatmap)/255 
+    cam = heatmap + np.float32(img) 
+    cam = cam / np.max(cam)
+    cv2.imwrite('GradCam_test.jpg', np.uint8(255 * cam))
+    
+    cam = cam[:, :, ::-1] #BGR > RGB
+    plt.figure(figsize=(10, 10))
+    plt.imshow(np.uint8(255*cam))
 
 
 
