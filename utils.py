@@ -341,12 +341,13 @@ def get_misclassified_data(model, device, test_loader):
                     misclassified_data.append((image, label, pred))
     return misclassified_data
 
-    # -------------------- GradCam --------------------
+# -------------------- GradCam --------------------
 def display_gradcam_output(data: list,
                            classes: list[str],
                            inv_normalize: transforms.Normalize,
-                           model: 'DL Model', target_layers,
-                           #target_layers: list['model.layer'],
+                           model,
+                           #model: 'DL Model',
+                           target_layers: list['model_layer'],
                            targets=None,
                            number_of_samples: int = 10,
                            transparency: float = 0.60):
@@ -392,6 +393,7 @@ def display_gradcam_output(data: list,
         plt.title(r"Correct: " + classes[data[i][1].item()] + '\n' + 'Output: ' + classes[data[i][2].item()])
         plt.xticks([])
         plt.yticks([])
+
 
 def display_cifar_misclassified_data(data: list,
                                      classes: list[str],
