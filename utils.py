@@ -346,7 +346,7 @@ def display_gradcam_output(data: list,
                            classes: list[str],
                            inv_normalize: transforms.Normalize,
                            model: 'DL Model',
-                           target_layers: list['model_layer'],
+                           target_layers: list['model.layer'],
                            targets=None,
                            number_of_samples: int = 10,
                            transparency: float = 0.60):
@@ -367,7 +367,7 @@ def display_gradcam_output(data: list,
     y_count = 1 if number_of_samples <= 5 else math.floor(number_of_samples / x_count)
 
     # Create an object for GradCam
-    cam = GradCAM(model=model, target_layers=target_layers)#, use_cuda=True)
+    cam = GradCAM(model=model, target_layers=target_layers, use_cuda=True)
 
     # Iterate over number of specified images
     for i in range(number_of_samples):
