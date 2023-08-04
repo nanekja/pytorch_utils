@@ -243,7 +243,7 @@ def wrong_predictions(model, test_loader, device):
 
     return wrong_predictions
 
-def plot_misclassified2(wrong_predictions, mean, std, num_img):
+def plot_misclassified2(wrong_predictions, mean, std, num_img, classes):
     fig = plt.figure(figsize=(15,12))
     fig.tight_layout()
     for i, (img, pred, correct) in enumerate(wrong_predictions[:num_img]):
@@ -256,7 +256,7 @@ def plot_misclassified2(wrong_predictions, mean, std, num_img):
         fig.subplots_adjust(hspace=.5)
         ax.axis('off')
         #class_names,_ = get_classes()
-        classes = ('plane', 'car', 'bird', 'cat','deer', 'dog', 'frog', 'horse', 'ship', 'truck')
+        #classes = ('plane', 'car', 'bird', 'cat','deer', 'dog', 'frog', 'horse', 'ship', 'truck')
         ax.set_title(f'\nActual : {classes[target.item()]}\nPredicted : {classes[pred.item()]}',fontsize=10)  
         ax.imshow(img)  
 
