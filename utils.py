@@ -11,27 +11,8 @@ import cv2
 import sys
 import torch.nn.functional as F
 import math
-from pytorch_grad_cam.utils.image import show_cam_on_image
-from pytorch_grad_cam import GradCAM
-
-def preprocess_image(img):
-
-    mean = [0.485, 0.456, 0.406] 
-    stds = [0.229, 0.224, 0.225]
-    preprocessed_img = img.copy()[:, :, ::-1] # BGR > RGB
-    
-    for i in range(3):
-
-        preprocessed_img[:, :, i] = preprocessed_img[:, :, i] - mean[i]
-        preprocessed_img[:, :, i] = preprocessed_img[:, :, i] / stds[i]
-        
-    preprocessed_img = \
-        np.ascontiguousarray(np.transpose(preprocessed_img, (2, 0, 1))) #transpose HWC > CHW
-    preprocessed_img = t.from_numpy(preprocessed_img) #totensor
-    preprocessed_img.unsqueeze_(0)
-    input = t.tensor(preprocessed_img, requires_grad=True)
-    
-    return input
+#from pytorch_grad_cam.utils.image import show_cam_on_image
+#from pytorch_grad_cam import GradCAM
 
 """VISUALIZE_GRADCAM"""
 
@@ -242,16 +223,44 @@ def ler_rate(net, optimizer, criterion, train_loader):
     #ler_rate = lr_finder.history['lr'][lr_finder.history['loss'].index(lr_finder.best_loss)]
     return lr1
 
-def show_cam_on_image(img, mask):
-    heatmap = cv2.applyColorMap(np.uint8(255*mask), cv2.COLORMAP_JET)
-    heatmap = np.float32(heatmap)/255 
-    cam = heatmap + np.float32(img) 
-    cam = cam / np.max(cam)
-    cv2.imwrite('GradCam_test.jpg', np.uint8(255 * cam))
-    
-    cam = cam[:, :, ::-1] #BGR > RGB
-    plt.figure(figsize=(10, 10))
-    plt.imshow(np.uint8(255*cam))
+def wrong_predictions(model, test_loader, device):
+    wrong_images=[]
+    wrong_label=[]
+    correct_label=[]
+    model.eval()
+    with torch.no_grad():
+        for data, target in test_loader:
+            data, target = data.to(device), target.to(device)
+            output = model(data)        
+            pred = output.argmax(dim=1, keepdim=True).squeeze()  # get the index of the max log-probability
+
+            wrong_pred = (pred.eq(target.view_as(pred)) == False)
+            wrong_images.append(data[wrong_pred])
+            wrong_label.append(pred[wrong_pred])
+            correct_label.append(target.view_as(pred)[wrong_pred])
+            wrong_predictions = list(zip(torch.cat(wrong_images),torch.cat(wrong_label),torch.cat(correct_label)))
+        print(f'Total wrong predictions are {len(wrong_predictions)}')
+
+    return wrong_predictions
+
+def plot_misclassified2(wrong_predictions, mean, std, num_img):
+    fig = plt.figure(figsize=(15,12))
+    fig.tight_layout()
+    for i, (img, pred, correct) in enumerate(wrong_predictions[:num_img]):
+        img, pred, target = img.cpu().numpy().astype(dtype=np.float32), pred.cpu(), correct.cpu()
+        for j in range(img.shape[0]):
+            img[j] = (img[j]*std[j])+mean[j]
+
+        img = np.transpose(img, (1, 2, 0)) 
+        ax = fig.add_subplot(5, 5, i+1)
+        fig.subplots_adjust(hspace=.5)
+        ax.axis('off')
+        #class_names,_ = get_classes()
+
+        ax.set_title(f'\nActual : {classes[target.item()]}\nPredicted : {classes[pred.item()]}',fontsize=10)  
+        ax.imshow(img)  
+
+    plt.show()
 
 
 
