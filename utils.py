@@ -256,7 +256,7 @@ def plot_misclassified2(wrong_predictions, mean, std, num_img):
         fig.subplots_adjust(hspace=.5)
         ax.axis('off')
         #class_names,_ = get_classes()
-
+        classes = ('plane', 'car', 'bird', 'cat','deer', 'dog', 'frog', 'horse', 'ship', 'truck')
         ax.set_title(f'\nActual : {classes[target.item()]}\nPredicted : {classes[pred.item()]}',fontsize=10)  
         ax.imshow(img)  
 
