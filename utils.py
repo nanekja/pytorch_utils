@@ -261,8 +261,3 @@ def plot_misclassified2(wrong_predictions, mean, std, num_img, classes):
         ax.imshow(img)  
 
     plt.show()
-
-
-
-
-
